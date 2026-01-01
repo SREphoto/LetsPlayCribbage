@@ -1,0 +1,5 @@
+{
+  "name": "Cribbage Pro",
+  "description": "Learn and play the classic card game of cribbage. This app provides a comprehensive, AI-generated tutorial for 2, 3, or 4 players and lets you set up a practice game against computer opponents.",
+  "requestFramePermissions": []
+}

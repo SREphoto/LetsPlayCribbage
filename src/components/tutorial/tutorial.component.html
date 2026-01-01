@@ -1,0 +1,40 @@
+<div class="bg-gray-800/50 p-6 md:p-8 rounded-xl shadow-lg border border-gray-700">
+  <div class="text-center mb-8">
+    <h2 class="text-3xl font-bold text-white mb-2">Cribbage School</h2>
+    <p class="text-gray-300">Select the number of players to learn the specific rules.</p>
+  </div>
+
+  <div class="flex justify-center gap-4 mb-8">
+    @for (count of [2, 3, 4]; track count) {
+      <button 
+        (click)="selectRules(count)"
+        [class]="'px-6 py-3 text-lg font-semibold rounded-lg shadow-md transition-all duration-200 ' + (playerCount() === count ? 'bg-yellow-500 text-gray-900 scale-110' : 'bg-gray-700 text-white hover:bg-gray-600')">
+        {{ count }} Players
+      </button>
+    }
+  </div>
+
+  <div class="mt-4 min-h-[300px] bg-gray-900/70 p-6 rounded-lg border border-gray-600">
+    @if (formattedRules().length > 0) {
+      <div class="prose prose-invert max-w-none text-gray-300">
+        @for (item of formattedRules(); track $index) {
+          @switch (item.type) {
+            @case ('h2') {
+              <h2 class="text-2xl font-bold text-yellow-300 border-b-2 border-yellow-300/30 pb-2 mb-4 mt-6" [innerHTML]="item.content"></h2>
+            }
+            @case ('p') {
+              <p class="leading-relaxed mb-3" [innerHTML]="item.content"></p>
+            }
+            @case ('quiz') {
+              <app-interactive-quiz [quizData]="item.data"></app-interactive-quiz>
+            }
+          }
+        }
+      </div>
+    } @else {
+      <div class="flex items-center justify-center h-full text-gray-400">
+        <p class="text-xl">Please select a player count above to see the rules.</p>
+      </div>
+    }
+  </div>
+</div>

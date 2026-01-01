@@ -1,0 +1,80 @@
+<div class="min-h-screen bg-green-900/50 text-gray-200 font-sans">
+  <header class="bg-gray-900/80 backdrop-blur-sm shadow-2xl sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-3xl font-bold text-yellow-300 tracking-wider" style="font-family: 'Georgia', serif;">
+        Cribbage Pro
+      </h1>
+      @if (view() !== 'home') {
+        <button (click)="setView('home')" class="px-4 py-2 bg-yellow-600 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-75 transition duration-200 ease-in-out flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+          </svg>
+          Home
+        </button>
+      }
+    </div>
+  </header>
+
+  <main class="container mx-auto p-4 md:p-8">
+    @switch (view()) {
+      @case ('home') {
+        <div class="text-center bg-gray-800/50 p-8 rounded-xl shadow-lg border border-gray-700">
+          <h2 class="text-4xl font-bold text-white mb-4">Welcome to Cribbage Pro!</h2>
+          <p class="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
+            Your all-in-one companion for learning and playing the classic game of cribbage.
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 justify-items-center gap-6 max-w-4xl mx-auto">
+            <button (click)="setView('tutorial')" class="w-full max-w-sm px-8 py-4 bg-blue-600 text-white font-bold text-lg rounded-lg shadow-lg hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition duration-200 transform hover:scale-105 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494M6.253 12h11.494" /></svg>
+              Learn to Play
+            </button>
+            <button (click)="setView('play')" class="w-full max-w-sm px-8 py-4 bg-green-600 text-white font-bold text-lg rounded-lg shadow-lg hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-200 transform hover:scale-105 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              Play a Game
+            </button>
+            <button (click)="setView('scoring-helper')" class="w-full max-w-sm px-8 py-4 bg-purple-600 text-white font-bold text-lg rounded-lg shadow-lg hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-opacity-75 transition duration-200 transform hover:scale-105 flex items-center justify-center">
+               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h3m-3-10h.01M9 17h.01M12 17h.01M15 17h.01M9 14h.01M12 14h.01M15 14h.01M9 11h.01M12 11h.01M15 11h.01M12 21a9 9 0 110-18 9 9 0 010 18z" /></svg>
+              Scoring Helper
+            </button>
+            <button (click)="setView('reference')" class="w-full max-w-sm px-8 py-4 bg-indigo-600 text-white font-bold text-lg rounded-lg shadow-lg hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-opacity-75 transition duration-200 transform hover:scale-105 flex items-center justify-center">
+               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v11.494m-5.747-8.247l11.494 0M4.253 12h15.494" /><path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h10a2 2 0 002-2v-1a2 2 0 012-2h1.945M7.955 16h8.09" /></svg>
+              Quick Reference
+            </button>
+            <button (click)="openStrategyModal('discarding')" class="w-full max-w-sm px-8 py-4 bg-teal-600 text-white font-bold text-lg rounded-lg shadow-lg hover:bg-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-opacity-75 transition duration-200 transform hover:scale-105 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+              Discarding Strategy
+            </button>
+             <button (click)="openStrategyModal('pegging')" class="w-full max-w-sm px-8 py-4 bg-cyan-600 text-white font-bold text-lg rounded-lg shadow-lg hover:bg-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-opacity-75 transition duration-200 transform hover:scale-105 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.333-4zM19.933 12.8a1 1 0 000-1.6l-5.333-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.333-4z" /></svg>
+              Pegging Strategy
+            </button>
+          </div>
+        </div>
+      }
+      @case ('tutorial') {
+        <app-tutorial></app-tutorial>
+      }
+      @case ('play') {
+        <app-game-setup></app-game-setup>
+      }
+      @case ('scoring-helper') {
+        <app-scoring-helper></app-scoring-helper>
+      }
+      @case ('reference') {
+        <app-reference-guide></app-reference-guide>
+      }
+    }
+  </main>
+  
+  <!-- Strategy Guide Modal -->
+  @if (activeStrategyModal(); as modalType) {
+    <div class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4" (click)="closeStrategyModal()">
+      <div class="w-full max-w-4xl max-h-[90vh] bg-gray-800 rounded-2xl shadow-lg border border-gray-600 flex flex-col" (click)="$event.stopPropagation()">
+        <app-strategy-guide 
+          [strategyType]="modalType"
+          (closeModal)="closeStrategyModal()">
+        </app-strategy-guide>
+      </div>
+    </div>
+  }
+</div>

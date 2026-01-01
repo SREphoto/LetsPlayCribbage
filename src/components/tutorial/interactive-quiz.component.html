@@ -1,0 +1,43 @@
+<div class="bg-gray-700/50 my-6 p-4 rounded-lg border-2 border-dashed border-yellow-400/50 not-prose">
+  <p class="font-semibold text-lg text-yellow-300 mb-3">{{ quizData().question }}</p>
+  
+  <!-- Cards Display -->
+  <div class="flex justify-center items-center gap-2 mb-4 flex-wrap">
+    <span class="text-gray-300 font-bold mr-2">Hand:</span>
+    @for (card of quizData().hand; track card) {
+      <div class="p-2 w-14 h-20 bg-white rounded shadow-md flex flex-col justify-between items-center font-bold text-lg" [class]="getCardDisplay(card).color">
+        <span>{{ getCardDisplay(card).rank }}</span>
+        <span>{{ getCardDisplay(card).suit }}</span>
+      </div>
+    }
+    <div class="w-1 h-16 bg-gray-600 rounded-full mx-1"></div>
+    <span class="text-yellow-400/80 font-bold mr-2">Starter:</span>
+     <div class="p-2 w-14 h-20 bg-white rounded shadow-md flex flex-col justify-between items-center font-bold text-lg border-2 border-yellow-400" [class]="getCardDisplay(quizData().starter).color">
+        <span>{{ getCardDisplay(quizData().starter).rank }}</span>
+        <span>{{ getCardDisplay(quizData().starter).suit }}</span>
+      </div>
+  </div>
+
+  <!-- Options -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    @for (option of quizData().options; track option.text) {
+      <button 
+        (click)="selectAnswer(option)"
+        [disabled]="isAnswered()"
+        [class]="'p-3 rounded-md text-left transition-all duration-200 ' + 
+                 (isAnswered() ? 
+                   (option.isCorrect ? 'bg-green-600 text-white ring-2 ring-white' : (selectedAnswer() === option ? 'bg-red-600 text-white' : 'bg-gray-600 text-gray-400')) : 
+                   'bg-gray-800 hover:bg-gray-600 text-white'
+                 )">
+        {{ option.text }}
+      </button>
+    }
+  </div>
+
+  <!-- Feedback -->
+  @if (isAnswered()) {
+    <p class="mt-4 text-center font-bold" [class]="selectedAnswer()?.isCorrect ? 'text-green-400' : 'text-red-400'">
+      {{ feedback() }}
+    </p>
+  }
+</div>

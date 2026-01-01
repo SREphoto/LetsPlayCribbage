@@ -1,0 +1,27 @@
+<div class="bg-gray-800/50 p-6 md:p-8 rounded-xl shadow-lg border border-gray-700">
+  <div class="text-center mb-8">
+    <h2 class="text-3xl font-bold text-white mb-2">Quick Reference Guide</h2>
+    <p class="text-gray-300">A handy guide to all scoring combinations in Cribbage.</p>
+  </div>
+
+  <div class="mt-4 bg-gray-900/70 p-6 rounded-lg border border-gray-600">
+    @if (formattedGuide().length > 0) {
+      <div class="prose prose-invert max-w-none text-gray-300">
+        @for (line of formattedGuide(); track $index) {
+          @switch (line.type) {
+            @case ('h2') {
+              <h2 class="text-2xl font-bold text-yellow-300 border-b-2 border-yellow-300/30 pb-2 mb-4 mt-6">{{ line.text }}</h2>
+            }
+            @case ('p') {
+              <p class="leading-relaxed mb-3" [innerHTML]="line.text"></p>
+            }
+          }
+        }
+      </div>
+    } @else {
+      <div class="flex items-center justify-center h-full text-gray-400">
+        <p class="text-xl">Reference guide is not available.</p>
+      </div>
+    }
+  </div>
+</div>

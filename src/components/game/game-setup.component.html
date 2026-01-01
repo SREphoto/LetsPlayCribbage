@@ -1,0 +1,63 @@
+<div class="bg-gray-800/50 p-6 md:p-8 rounded-xl shadow-lg border border-gray-700">
+  @if (!gameStarted()) {
+    <div class="text-center">
+      <h2 class="text-3xl font-bold text-white mb-2">Set Up Your Game</h2>
+      <p class="text-gray-300 mb-8">Choose your game settings below.</p>
+      
+      <div class="mb-8 space-y-6">
+        <div>
+          <label class="text-lg text-gray-300 mr-4 block mb-2">Total Players:</label>
+          <div class="inline-flex rounded-md shadow-sm" role="group">
+            @for (count of [2]; track count) {
+              <button 
+                type="button"
+                (click)="setPlayerCount(count)"
+                [class]="'py-2 px-6 text-lg font-medium text-white focus:z-10 focus:ring-2 focus:ring-yellow-500 ' + (playerCount() === count ? 'bg-yellow-600' : 'bg-gray-700 hover:bg-gray-600') + ($first ? ' rounded-l-lg' : '') + ($last ? ' rounded-r-lg' : '')">
+                {{ count }} (vs AI)
+              </button>
+            }
+          </div>
+        </div>
+
+        <div>
+          <label class="text-lg text-gray-300 mr-4 block mb-2">AI Difficulty:</label>
+          <div class="inline-flex rounded-md shadow-sm" role="group">
+            @for (level of ['Beginner', 'Intermediate', 'Advanced']; track level) {
+              <button 
+                type="button"
+                (click)="setDifficulty(level)"
+                [class]="'py-2 px-6 text-lg font-medium text-white focus:z-10 focus:ring-2 focus:ring-yellow-500 ' + (difficulty() === level ? 'bg-yellow-600' : 'bg-gray-700 hover:bg-gray-600') + ($first ? ' rounded-l-lg' : '') + ($last ? ' rounded-r-lg' : '')">
+                {{ level }}
+              </button>
+            }
+          </div>
+        </div>
+
+         <div>
+          <label class="text-lg text-gray-300 mr-4 block mb-2">Scoring Mode:</label>
+          <div class="inline-flex rounded-md shadow-sm" role="group">
+            @for (mode of ['Normal', 'Learning']; track mode) {
+              <button 
+                type="button"
+                (click)="setScoringMode(mode)"
+                [class]="'py-2 px-6 text-lg font-medium text-white focus:z-10 focus:ring-2 focus:ring-yellow-500 ' + (scoringMode() === mode ? 'bg-yellow-600' : 'bg-gray-700 hover:bg-gray-600') + ($first ? ' rounded-l-lg' : '') + ($last ? ' rounded-r-lg' : '')">
+                {{ mode }}
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+
+      <button (click)="startGame()" class="w-full md:w-auto px-12 py-4 bg-green-600 text-white font-bold text-xl rounded-lg shadow-lg hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition-transform transform hover:scale-105">
+        Start Game
+      </button>
+    </div>
+  } @else {
+    <app-game-board 
+      [playerCount]="playerCount()" 
+      [difficulty]="difficulty()"
+      [scoringMode]="scoringMode()"
+      (exitGame)="exitGame()">
+    </app-game-board>
+  }
+</div>

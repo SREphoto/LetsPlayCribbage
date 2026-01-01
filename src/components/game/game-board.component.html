@@ -1,0 +1,183 @@
+<div class="w-full max-w-6xl mx-auto p-2 relative flex flex-col gap-4">
+  <!-- Cut for Deal Layover -->
+  @if (phase() === 'cut_for_deal') {
+    <div class="absolute inset-0 bg-black/70 z-40 flex flex-col items-center justify-center gap-4 text-center">
+      <h2 class="text-3xl font-bold text-yellow-300 mb-4">Cutting for First Deal</h2>
+      
+      @if (!humanCutCard()) {
+        <p class="text-lg text-white mb-4">{{ gameMessage() }}</p>
+        <button (click)="cutForDeal()" class="w-24 h-32 bg-blue-900 rounded-lg border-2 border-blue-500 shadow-lg hover:scale-105 transition-transform">
+          <div class="w-full h-full bg-blue-800/50 pattern-cross-dots-md text-blue-500/30"></div>
+        </button>
+      } @else {
+        <p class="text-lg text-white mb-4 h-12">{{ gameMessage() }}</p>
+        <div class="flex items-center justify-center gap-8">
+          <div class="text-center">
+            <p class="font-bold text-white text-lg mb-2">You Cut</p>
+            <div class="p-2 w-20 h-28 bg-white rounded-lg shadow-lg flex flex-col justify-between items-center font-bold text-xl">
+              <span [class]="getCardDisplay(humanCutCard()!).color">{{ getCardDisplay(humanCutCard()!).rank }}</span>
+              <span [class]="'text-4xl ' + getCardDisplay(humanCutCard()!).color">{{ getCardDisplay(humanCutCard()!).suit }}</span>
+            </div>
+          </div>
+          <div class="text-center">
+            <p class="font-bold text-white text-lg mb-2">AI Cut</p>
+            <div class="p-2 w-20 h-28 bg-white rounded-lg shadow-lg flex flex-col justify-between items-center font-bold text-xl">
+              <span [class]="getCardDisplay(aiCutCard()!).color">{{ getCardDisplay(aiCutCard()!).rank }}</span>
+              <span [class]="'text-4xl ' + getCardDisplay(aiCutCard()!).color">{{ getCardDisplay(aiCutCard()!).suit }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Game Over Layover -->
+  @if (phase() === 'game_over') {
+    <div class="absolute inset-0 bg-black/70 z-40 flex flex-col items-center justify-center gap-4">
+      <h2 class="text-5xl font-bold text-yellow-400">Game Over!</h2>
+      <p class="text-2xl text-white">{{ gameMessage() }}</p>
+      <button (click)="exitGame.emit()" class="mt-4 px-8 py-4 bg-green-600 text-white font-bold text-xl rounded-lg shadow-lg hover:bg-green-500">
+        Play Again
+      </button>
+    </div>
+  }
+
+  <!-- Hand Scoring Layover -->
+  @if (phase().startsWith('score_') && currentScoringHand(); as scoringHand) {
+    <div class="absolute inset-0 bg-black/70 z-30 flex items-center justify-center">
+      <app-hand-scoring 
+        [hand]="scoringHand.hand"
+        [starterCard]="starterCard()!"
+        [playerName]="scoringHand.playerName"
+        [isCrib]="scoringHand.isCrib"
+        [isPlayerHand]="scoringHand.playerId === humanPlayer()?.id"
+        [scoringMode]="scoringMode()"
+        (scoreCounted)="handleScoreCounted($event)">
+      </app-hand-scoring>
+    </div>
+  }
+
+  <!-- AI Player (Top) -->
+  <div class="text-center">
+    <div class="flex justify-center gap-2 mb-2">
+      @for (card of aiPlayer()?.hand; track card) {
+        <div class="w-14 h-20 bg-blue-900 rounded-lg border-2 border-blue-500 shadow-lg">
+          <div class="w-full h-full bg-blue-800/50 pattern-cross-dots-md text-blue-500/30"></div>
+        </div>
+      }
+      @for (i of [].constructor(aiHandPlaceholders()); track i) {
+         <div class="w-14 h-20"></div>
+      }
+    </div>
+    <div class="bg-gray-900/50 px-4 py-2 rounded-lg inline-block">
+      <p class="font-bold text-white text-lg">{{ aiPlayer()?.name }}</p>
+    </div>
+  </div>
+
+  <!-- Center Game Area -->
+  <div class="w-full bg-gray-900/30 p-4 rounded-xl border-2 border-yellow-800/50 flex flex-col items-center gap-4">
+    <app-cribbage-board 
+      [player1Score]="humanPlayer()?.score ?? 0"
+      [player2Score]="aiPlayer()?.score ?? 0"
+      [player1Name]="humanPlayer()?.name ?? 'Player'"
+      [player2Name]="aiPlayer()?.name ?? 'AI'"
+      [lastScoringPlayerId]="lastScoringPlayerId()">
+    </app-cribbage-board>
+    
+    <div class="flex justify-around w-full items-start mt-4">
+      <!-- Deck and Starter -->
+      <div class="text-center flex items-center gap-4">
+        <div class="text-center">
+          <div class="w-16 h-24 bg-blue-900 rounded-lg border-2 border-blue-500 shadow-lg">
+            <div class="w-full h-full bg-blue-800/50 pattern-cross-dots-md text-blue-500/30"></div>
+          </div>
+          <p class="text-xs text-gray-300 font-semibold mt-1">DECK</p>
+        </div>
+        @if (starterCard()) {
+          <div class="text-center">
+            <div class="p-2 w-16 h-24 bg-white rounded-lg shadow-md flex flex-col justify-between items-center font-bold text-xl border-2 border-yellow-400">
+              <span [class]="getCardDisplay(starterCard()!).color">{{ getCardDisplay(starterCard()!).rank }}</span>
+              <span [class]="'text-3xl ' + getCardDisplay(starterCard()!).color">{{ getCardDisplay(starterCard()!).suit }}</span>
+            </div>
+            <p class="text-xs text-yellow-300 font-semibold mt-1">STARTER</p>
+          </div>
+        }
+      </div>
+      
+      <!-- Pegging Pile Display -->
+      <div class="text-center">
+        <div class="relative w-24 h-32 bg-green-900/50 rounded-lg flex items-center justify-center border-4 border-yellow-800/50 shadow-inner">
+          @if (peggingPile().length > 0) {
+            @let lastCard = peggingPile()[peggingPile().length - 1];
+            <div class="p-1 w-16 h-24 bg-white rounded-lg shadow-lg flex flex-col justify-between items-center font-bold text-xl">
+               <span [class]="getCardDisplay(lastCard).color">{{ getCardDisplay(lastCard).rank }}</span>
+               <span [class]="'text-3xl ' + getCardDisplay(lastCard).color">{{ getCardDisplay(lastCard).suit }}</span>
+             </div>
+          }
+          <div class="absolute -top-8 bg-gray-900/80 px-4 py-1 rounded-full border-2 border-yellow-500">
+              <span 
+                class="text-3xl font-black text-white tracking-tighter transition-transform duration-200"
+                [class.scale-125]="countJustUpdated()">
+                {{ peggingTotal() }}
+              </span>
+          </div>
+        </div>
+        <p class="text-xs text-yellow-200 font-semibold mt-1 tracking-wider">COUNT</p>
+      </div>
+      
+      <!-- Crib -->
+       <div class="text-center">
+        <div class="w-16 h-24 bg-gray-800 border-2 border-dashed border-gray-500 rounded-lg flex items-center justify-center">
+          <span class="text-4xl text-gray-500">{{ crib().length > 0 ? crib().length : '' }}</span>
+        </div>
+        <p class="text-xs text-gray-300 font-semibold mt-1">CRIB</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Game Message -->
+  <div class="bg-black/50 px-6 py-2 rounded-lg text-center h-12 flex items-center justify-center">
+      <p class.="text-yellow-200 text-xl font-semibold">{{ gameMessage() }}</p>
+  </div>
+  
+  <!-- Human Player (Bottom) -->
+  <div class="text-center relative min-h-[160px]">
+    <!-- Confirm/Go Buttons -->
+    <div class="absolute -top-4 left-1/2 -translate-x-1/2 h-16">
+      @if (phase() === 'discarding' && selectedDiscards().length === 2) {
+        <button 
+          (click)="confirmDiscard()"
+          class="px-6 py-3 bg-green-600 text-white font-bold text-lg rounded-lg shadow-lg hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-400 transition-all animate-pulse">
+          Confirm Discard
+        </button>
+      }
+      @if (phase() === 'pegging' && currentPlayerId() === humanPlayer()?.id && !canHumanPlay()) {
+        <button 
+          (click)="handleGo()"
+          class="px-8 py-3 bg-blue-600 text-white font-bold text-lg rounded-lg shadow-lg hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all animate-pulse">
+          Go
+        </button>
+      }
+    </div>
+
+    <div class="flex justify-center gap-2 mb-2 mt-12">
+       @for (card of humanPlayer()?.hand; track card) {
+        <button 
+          (click)="handleCardClick(card)"
+          [class]="getCardClasses(card)"
+          [disabled]="!(phase() === 'discarding' || (phase() === 'pegging' && currentPlayerId() === humanPlayer()?.id))">
+          <span [class]="getCardDisplay(card).color">{{ getCardDisplay(card).rank }}</span>
+          <span [class]="'text-3xl ' + getCardDisplay(card).color">{{ getCardDisplay(card).suit }}</span>
+        </button>
+      }
+    </div>
+     <div class="bg-gray-900/50 px-4 py-2 rounded-lg inline-block">
+      <p class="font-bold text-white text-lg">{{ humanPlayer()?.name }}</p>
+    </div>
+  </div>
+
+  <!-- Exit Button -->
+  <button (click)="exitGame.emit()" class="absolute top-2 right-2 px-3 py-1 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-400">
+    Exit
+  </button>
+</div>

@@ -1,0 +1,88 @@
+<div class="bg-gray-800/80 backdrop-blur-md p-6 rounded-2xl shadow-2xl border-2 border-yellow-700/50 w-full max-w-lg text-white animate-fade-in">
+  @if (calculatedScore(); as score) {
+    <!-- Header -->
+    <div class="text-center mb-4">
+      <h2 class="text-2xl font-bold text-yellow-300">
+        Scoring {{ playerName }}'s {{ isCrib() ? 'Crib' : 'Hand' }}
+      </h2>
+    </div>
+
+    <!-- Cards Display -->
+    <div class="flex justify-center items-center gap-2 mb-4 flex-wrap">
+      @for (card of hand(); track card) {
+        <div class="p-2 w-14 h-20 bg-white rounded shadow-md flex flex-col justify-between items-center font-bold text-lg" [class]="getCardDisplay(card).color">
+          <span>{{ getCardDisplay(card).rank }}</span>
+          <span class="text-2xl">{{ getCardDisplay(card).suit }}</span>
+        </div>
+      }
+      <div class="w-1 h-16 bg-gray-600 rounded-full mx-1"></div>
+      <div class="p-2 w-14 h-20 bg-white rounded shadow-md flex flex-col justify-between items-center font-bold text-lg border-2 border-yellow-400" [class]="getCardDisplay(starterCard()).color">
+        <span>{{ getCardDisplay(starterCard()).rank }}</span>
+        <span class="text-2xl">{{ getCardDisplay(starterCard()).suit }}</span>
+      </div>
+    </div>
+
+    <!-- Scoring Area -->
+    @if (scoringMode() === 'Learning' && isPlayerHand()) {
+      @if (!isSubmitted()) {
+        <div class="text-center p-4">
+          <label for="score-input" class="block text-lg font-semibold mb-2">How many points do you count?</label>
+          <input 
+            type="number"
+            id="score-input"
+            [(ngModel)]="playerScoreInput"
+            class="w-32 text-center bg-gray-900 text-white text-2xl font-bold p-2 rounded-lg border-2 border-gray-600 focus:border-yellow-500 focus:outline-none"
+            placeholder="0">
+          <button (click)="submitScore()" [disabled]="playerScoreInput() === null" class="mt-4 px-8 py-3 bg-green-600 text-white font-bold text-lg rounded-lg shadow-lg hover:bg-green-500 disabled:bg-gray-500">
+            Check My Count
+          </button>
+        </div>
+      } @else {
+        <div class="text-center p-4">
+          <p class="text-lg font-semibold mb-2" [class]="playerScoreInput() === score.totalScore ? 'text-green-400' : 'text-red-400'">
+            {{ feedbackMessage() }}
+          </p>
+          <h3 class="text-md font-semibold text-gray-300">Correct Score</h3>
+          <p class="text-6xl font-bold text-yellow-300 mb-4">{{ score.totalScore }}</p>
+        </div>
+      }
+    } @else {
+      <div class="text-center p-4">
+        <h3 class="text-md font-semibold text-gray-300">Total Score</h3>
+        <p class="text-6xl font-bold text-yellow-300 mb-4">{{ score.totalScore }}</p>
+      </div>
+    }
+
+    <!-- Detailed Breakdown (shown after submission in learning mode) -->
+    @if (scoringMode() === 'Normal' || !isPlayerHand() || isSubmitted()) {
+      <div class="max-h-64 overflow-y-auto space-y-3 bg-gray-900/50 p-3 rounded-lg border border-gray-600 mt-4">
+        @for (item of score.breakdown; track item.type) {
+          <div class="bg-gray-800/60 p-2 rounded-md text-left">
+            <div class="flex justify-between items-baseline border-b border-gray-700 pb-1 mb-2">
+              <h4 class="text-lg font-bold text-white uppercase tracking-wider">{{ item.type }}</h4>
+              <span class="text-sm font-semibold text-gray-400">{{ pointsPerInstance[item.type] }}</span>
+            </div>
+            <div class="space-y-2">
+              @for (combo of item.combinations; track combo) {
+                <div class="flex items-center gap-1 flex-wrap">
+                  @for (card of parseCombination(combo); track card) {
+                    <div class="relative p-1 w-10 h-14 bg-white rounded shadow-sm flex flex-col justify-between items-center font-bold text-sm" [class]="getCardDisplay(card).color">
+                      <span>{{ getCardDisplay(card).rank }}</span>
+                      <span class="text-lg">{{ getCardDisplay(card).suit }}</span>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        } @empty {
+          <p class="text-gray-400 text-center py-4">No scoring combinations found.</p>
+        }
+      </div>
+    }
+  } @else {
+    <div class="flex items-center justify-center h-full text-gray-400 p-8">
+      <p class="text-lg">Calculating score...</p>
+    </div>
+  }
+</div>
